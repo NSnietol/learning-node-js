@@ -51,7 +51,29 @@ let validarRole=(req,res,next)=>{
 }
 
 
+let validarTokenImg=(req,res,next)=>{
+
+    let token = req.query.token;
+
+
+    jwt.verify(token,process.env.SEED,(err,decoced)=>{
+
+        if(err){
+
+            return res.status(401).json({
+
+                ok:false,
+                err
+            })
+        }
+
+        req.usuario=decoced.usuario;
+        next();
+
+    });
+    
+}
 
 module.exports = {
-    validarToken,validarRole
+    validarToken,validarRole,validarTokenImg
 }

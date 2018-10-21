@@ -21,7 +21,7 @@ app.get('/usuario', auth.validarToken, function(req, res) {
     let estado = Boolean(req.body.estado || true);
 
     // La segunda cadena indica que campos extraer
-    Usuario.find({ estado }, 'nombre email estado')
+    Usuario.find({ estado }, 'nombre email estado img')
         .skip(desde)
         .limit(limite)
         .exec((err, usuarios) => {
