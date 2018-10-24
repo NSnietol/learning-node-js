@@ -10,23 +10,24 @@ if (!searchParams.has('usuario')) {
 
 }
 
-console.log(searchParams.get('usuario'));
 let usuario = searchParams.get('usuario');
 
 socket.on("connect", function() {
 
-    console.log("Conectado nuevo chat");
+    console.log("Conectado nuevo usuario");
     socket.emit('ingresarChat', { usuario },
         function(resp) {
-
-            console.log("Lista de usuarios", resp);
+            //     console.log("Lista de usuarios", resp);
         });
-    socket.on('clientesActivos', (data) => {
 
+
+    socket.on('enviarMensaje', (data) => {
+        console.log('Servidor ', data);
+    });
+
+    socket.on('clientesActivos', (data) => {
         console.log('Usuarios activos', data);
     })
-
-
 
 });
 

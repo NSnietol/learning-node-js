@@ -2,6 +2,8 @@ const { io } = require("../server");
 
 
 const { Usuarios } = require("../classes/usuario.js");
+const { crearMensaje } = require("../utils/util");
+
 
 let usuarios = new Usuarios();
 
@@ -20,14 +22,31 @@ io.on('connection', (cliente) => {
 
         }
         let personas = usuarios.agregarPersona(cliente.id, data.usuario);
+        cliente.broadcast.emit('enviarMensaje', crearMensaje('Admin', data.usuario + ' ingresó'));
+
         cliente.broadcast.emit('clientesActivos', personas);
 
-        return callback(personas);
+        //    return callback(personas);
+    });
+
+    cliente.on('enviarMensaje', (data) => {
+        console.log('Mensaje desde cliente', data);
+        let nombre = usuarios.getPersona(cliente.id).persona.nombre;
+
+        if (nombre) {
+            cliente.broadcast.emit('enviarMensaje', { nombre: nombre, message: data.message });
+
+        }
+
     });
 
     cliente.on('disconnect', () => {
-        usuarios.borrarPersona(cliente.id);
-        cliente.broadcast.emit('clientesActivos', usuarios.getPersonas());
-    });
+        let data = usuarios.borrarPersona(cliente.id);
 
+        cliente.broadcast.emit('enviarMensaje', crearMensaje('Administrador', `${data.personaBorrada.persona.nombre} abandonó el chat`));
+
+
+        cliente.broadcast.emit('clientesActivos', usuarios.getPersonas());
+
+    });
 });
