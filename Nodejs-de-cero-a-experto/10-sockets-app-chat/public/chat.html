@@ -2,47 +2,72 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Nuevo Ticket</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Nuevo Ticket</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-
-        
-                <a class="navbar-brand" href="index.html">
-                        <img src="/open-iconic/svg/calendar.svg">
-                </a>
-       
-        <a class="navbar-brand" href="#">App tickets</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="index.html">Inicio <span class="sr-only">(current)</span></a>
-            </li>
-            
-           
-          </ul>
-        
-        </div>
-      </nav>
-
-    
-   
-<script src="js/libs/jquery.min.js"></script>
-<script src="socket.io/socket.io.js"></script>
-<script src="js/socket-chat.js"></script>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
 
+    <a class="navbar-brand" href="index.html">
+      <img src="/open-iconic/svg/calendar.svg">
+    </a>
+
+    <a class="navbar-brand" href="#">App chat</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="index.html">Inicio <span class="sr-only">(current)</span></a>
+        </li>
+      </ul>
+
+    </div>
+
+  </nav>
+
+
+  <div class="container">
+    <h3>Usuario <small id='nombreUsuario'> </small></h3>
+  </div>
+
+
+  <div class="container">
+    <h2>Mensajes recibidos</h2>
+    <p></p>
+    <form>
+      <div class="form-group">
+        <label for="comment"></label>
+        <textarea class="form-control" id='chat' rows="4" id="comment"></textarea>
+      </div>
+    </form>
+  </div>
+  <div class="container">
+    <div class="form-group">
+      <label for="usr">Mensaje:</label>
+      <input type="text" class="form-control" id="nuevo-mensaje">
+    </div>
+  </div>
+  <div class="container">
+    <button type="button" id='EnviarSaludo' class="btn btn-light">Enviar mensaje</button>
+  </div>
+
+
+  <script src="js/libs/jquery.min.js"></script>
+  <script src="socket.io/socket.io.js"></script>
+  <script  type="module" src="js/notificacion_push.js"></script>
+  <script  type="module" src="js/socket-chat.js"></script>
 
 
 
