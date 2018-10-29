@@ -1,94 +1,58 @@
-import { notificacion } from "./notificacion_push.js";
-
 var socket = io();
 
-var searchParams = new URLSearchParams(window.location.search);
+var params = new URLSearchParams(window.location.search);
 
-console.log("Sala ?",searchParams.has("sala"));
-if (!searchParams.has("usuario") || !searchParams.has("sala")) {
-  window.location = "index.html";
-  throw new Error("El usuario y sala  es necesario");
-}
-if(searchParams.has("sala")===undefined){
-  window.location = "index.html";
-
+if (!params.has('nombre') || !params.has('sala')) {
+    window.location = 'index.html';
+    throw new Error('El nombre y sala son necesarios');
 }
 
-var sala = searchParams.get('sala');
+var usuario = {
+    nombre: params.get('nombre'),
+    sala: params.get('sala')
+};
 
 
-let usuario=  {
-  usuario:searchParams.get("usuario"),
-  sala:searchParams.get("sala")
-}
 
-socket.on("connect", function() {
+socket.on('connect', function() {
+    console.log('Conectado al servidor');
 
-  console.log("Conectado nuevo usuario");
-
-  socket.emit("ingresarChat", usuario, function(resp) {
-    $("#nombreUsuario").text(usuario.usuario);
-
-    console.log("Usuario nuevo side-cliente");
-    //     console.log("Lista de usuarios", resp);
-  });
-
-  socket.on("enviarMensaje", data => {
-    if (data.usuario) {
-      notificacion(data.usuario);
-      $("#chat").text(
-        $("#chat").val() +
-          "\n" +
-          "Nombre :" +
-          data.usuario +
-          "\nMensaje:" +
-          data.message
-      );
-    } else {
-      console.log("Informacion sin usuario");
-    }
-  });
-
-socket.on("mensajePrivaod",data=>{
-
-
-  console.log('Mensaje privado');
-});
-
-  socket.on("clientesActivos", (data) => {
-    console.log("Usuarios activos", data);
-  });
-
-  $("#EnviarSaludo").keypress(function(e) {
-    var key = e.which;
-    if (key == 13) {
-      // the enter key code
-      enviarNuevoMensaje();
-    }
-  });
-
-  $("#EnviarSaludo").on("click", function() {
-    enviarNuevoMensaje();
-  });
-
+    socket.emit('entrarChat', usuario, function(resp) {
+        console.log('Usuarios conectados', resp);
+    });
 
 });
 
-function enviarNuevoMensaje() {
-  let message = $("#nuevo-mensaje").val();
+// escuchar
+socket.on('disconnect', function() {
 
-  socket.emit("enviarMensaje", {
-    usuario,
-    message
-  });
+    console.log('Perdimos conexión con el servidor');
 
-  $("#chat").text(
-    $("#chat").val() + "\n" + "Nombre :" + usuario + "\nMensaje:" + message
-  );
+});
 
-  $("#mensaje").empty();
-}
-socket.on("disconnect", function() {
-  notificacion();
-  console.log("Desconectado  chat");
+
+// Enviar información
+// socket.emit('crearMensaje', {
+//     nombre: 'Fernando',
+//     mensaje: 'Hola Mundo'
+// }, function(resp) {
+//     console.log('respuesta server: ', resp);
+// });
+
+// Escuchar información
+socket.on('crearMensaje', function(mensaje) {
+    console.log('Servidor:', mensaje);
+});
+
+// Escuchar cambios de usuarios
+// cuando un usuario entra o sale del chat
+socket.on('listaPersona', function(personas) {
+    console.log(personas);
+});
+
+// Mensajes privados
+socket.on('mensajePrivado', function(mensaje) {
+
+    console.log('Mensaje Privado:', mensaje);
+
 });
