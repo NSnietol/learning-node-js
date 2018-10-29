@@ -10,33 +10,38 @@ io.on("connection", cliente => {
 
   cliente.on("ingresarChat", (data, callback) => {
     console.log(data);
-    if (!data.usuario) {
+    if (!data.usuario || !data.sala) {
       return callback({
         ok: false,
-        message: "El nombre es requerido"
+        message: "El nombre y la sala es requerido"
       });
     }
-    let personas = usuarios.agregarPersona(cliente.id, data.usuario);
 
-    cliente.broadcast.emit(
-      "enviarMensaje",
-      crearMensaje("Admin", data.usuario + " ingresó")
-    );
+    cliente.join(data.sala);
 
-    cliente.broadcast.emit("clientesActivos", personas);
+     usuarios.agregarPersona(cliente.id, data.usuario,data.sala);
 
-    return callback(personas);
+    // cliente.broadcast.emit(
+    //   "enviarMensaje",
+    //   crearMensaje("Admin", data.usuario + " ingresó")
+    // );
+
+    let personas = usuarios.getPersonasPorSala(data.sala);
+    cliente.broadcast.to(data.sala).emit("clientesActivos", personas);
+
+    //return callback(personas);
   });
 
   cliente.on("enviarMensaje", data => {
-    console.log("Mensaje desde cliente", data);
-    let nombre = usuarios.getPersona(cliente.id).persona.nombre;
+  
 
-    if (nombre) {
+    let persona = usuarios.getPersona(cliente.id).persona;
+
+    if (persona) {
       console.log("OK solicitud, enviar a todos");
-      cliente.broadcast.emit(
+      cliente.broadcast.to(persona.sala).emit(
         "enviarMensaje",
-        crearMensaje(nombre, data.message)
+        crearMensaje(persona.usuario, data.message)
       );
     }
   });
@@ -62,16 +67,20 @@ io.on("connection", cliente => {
   });
 
   cliente.on("disconnect", () => {
-    let data = usuarios.borrarPersona(cliente.id);
+    let data = usuarios.borrarPersona(cliente.id).personaBorrada;
 
-    cliente.broadcast.emit(
+
+
+    cliente.broadcast.to(data.persona.sala).emit(
       "enviarMensaje",
       crearMensaje(
         "Administrador",
-        `${data.personaBorrada.persona.nombre} abandonó el chat`
+        `${data.persona.nombre} abandonó el chat`
       )
     );
 
-    cliente.broadcast.emit("clientesActivos", usuarios.getPersonas());
+    cliente.broadcast.to(data.persona.sala).emit("clientesActivos", usuarios.getPersonasPorSala(data.persona.sala));
   });
+
+
 });

@@ -4,18 +4,30 @@ var socket = io();
 
 var searchParams = new URLSearchParams(window.location.search);
 
+console.log("Sala ?",searchParams.has("sala"));
 if (!searchParams.has("usuario") || !searchParams.has("sala")) {
   window.location = "index.html";
   throw new Error("El usuario y sala  es necesario");
 }
+if(searchParams.has("sala")===undefined){
+  window.location = "index.html";
 
-let usuario = searchParams.get("usuario");
+}
+
+var sala = searchParams.get('sala');
+
+
+let usuario=  {
+  usuario:searchParams.get("usuario"),
+  sala:searchParams.get("sala")
+}
 
 socket.on("connect", function() {
+
   console.log("Conectado nuevo usuario");
 
-  socket.emit("ingresarChat", { usuario }, function(resp) {
-    $("#nombreUsuario").text(usuario);
+  socket.emit("ingresarChat", usuario, function(resp) {
+    $("#nombreUsuario").text(usuario.usuario);
 
     console.log("Usuario nuevo side-cliente");
     //     console.log("Lista de usuarios", resp);
