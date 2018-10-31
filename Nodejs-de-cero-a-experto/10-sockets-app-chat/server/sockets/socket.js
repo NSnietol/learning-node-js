@@ -9,8 +9,8 @@ io.on("connection", cliente => {
   console.log("Nuevo usuario");
 
   cliente.on("ingresarChat", (data, callback) => {
-    console.log(data);
-    if (!data.usuario || !data.sala) {
+    console.log("INgresadno",data);
+    if (!data.nombre || !data.sala) {
       return callback({
         ok: false,
         message: "El nombre y la sala es requerido"
@@ -19,7 +19,7 @@ io.on("connection", cliente => {
 
     cliente.join(data.sala);
 
-     usuarios.agregarPersona(cliente.id, data.usuario,data.sala);
+     usuarios.agregarPersona(cliente.id, data.nombre,data.sala);
 
     // cliente.broadcast.emit(
     //   "enviarMensaje",
@@ -29,7 +29,7 @@ io.on("connection", cliente => {
     let personas = usuarios.getPersonasPorSala(data.sala);
     cliente.broadcast.to(data.sala).emit("clientesActivos", personas);
 
-    //return callback(personas);
+  return callback(personas);
   });
 
   cliente.on("enviarMensaje", data => {
