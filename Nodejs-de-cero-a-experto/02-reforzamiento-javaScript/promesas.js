@@ -92,8 +92,6 @@ let getSalario = (empleado) => {
 }
 
 
-
-
 getEmpleadoId(3).then((result1) => {
 
     getSalario(result1).then((result) => {

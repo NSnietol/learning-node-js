@@ -1,0 +1,219 @@
+  show databases : Muestra las base de datos dentro del servidor mongo
+  db 		:Muestra la bd utilizada actualmente.
+  show collections : muestra las colecciones(tablas) de una base de datos.
+  db.collection.find().explain("executionStats") : Devuelve el tiempo en que tarda una sentencia en ejecutarse.
+
+
+   ==================================================INSERT====================================
+   
+   db.(nombre de la colección).insert : Inserta un registro.
+   db.collection.insert([var1,var2,va3]) : Inserta multiple registros. sdasd
+   
+   crear una collection con restricciones
+   db.createCollection("Restrict",
+   {
+          validator: { $and:
+          [
+            {nombre: { $type : "string" } },
+            {"nombre.campo": { $type : "string" } },
+            {sexo: { $in :["M","F"] } },
+            {email: {$regex:  /@/}},
+            {noPermitir: {$exists : false}}     
+          ]
+
+        }
+      })
+
+   =====================================================FIND========================================
+
+   db.collection.fin() : Equivale al select * from db
+
+
+   db.collection.find().pretty()  : Devuelve el objeto de forma más legible
+   db.collection.find( {campo: "" , campo:""} ): Funciona como el where
+   db.collection.find({condicion},{campos a mostrar:1} )  [1 o más indica que va a mostrar el campo y 0 indica que no]
+   db.collection.find({campo : {$ne: valor }}): Where not, dice campo distinto valor
+   db.collection.findOne(): Devuelve el primer elemento almacenado en la colle
+
+
+   ==================================================SAVE======================================= 
+   Permite actualizar un registro,se requiere obtener el registro de la collections.
+ 
+   db.collection.save(elemento)
+
+   ===============================================UPDATE================================================
+  
+   Si el valor de multi es true modifica todos los documentos de la collection
+   db.collection.update({campoBuscado:"valor"} , {$set:{campo:"Modificacion"}}, {multi:false})
+
+   db.collection.update({} , {$inc :{campo : 1}} ) Permite incrementar el valor del campo
+   
+   
+   Elimina el campo name de los documentos. 
+   db.collection.update({campoBuscado:"valor"} , {$unset:{name:"M"}}, {multi:false})
+
+
+   db.collection.update({campo:"valor"},valor)
+
+   db.usuarios.update({},{$addToSet : {valores: 3} }) : Agrega valores a un array, no repite los elementos.
+   
+   db.usuarios.update({},{$push : {valores: 3} }) : Agrega valores a un array, puede repite los elementos.
+
+
+   db.usuarios.update({},{$addToSet : {valores: {$each : [1,2,4] }} }) 
+
+
+   db.usuarios.update({},{$addToSet : {valores: {$each : [1,2,4] , $sort:1 }} }) Agrega elementos organizados
+
+
+
+
+
+   ======================================================DELETE====================================
+     
+
+   db.usuarios.update({},{$pull: {valores: 3}} : Elimina elementos de un array
+
+   db.usuarios.update({},{$pullAll: {valores: [1,3,4]}} : Elimina los elementos de un array
+
+   db.collection.remove({}).
+   No se necesita establecer sentencia multi:true
+   
+   db.drop().
+   Elimina todos los documentos de la collection.
+
+   db.dropDatabase().
+  
+   =======================================================OPERADORES====================================
+
+   db.libros.find({unidades:{$gt:2000}},{nombre:1,_id:0})
+
+   db.libros.find({unidades:{$gte:700, $lte:9999}},{nombre:1,_id:0,un})  si se escriben 2 sentecias
+   se establece un between 
+
+
+    $gt > mayor
+    $gte >=
+    $lt <
+    $lte <=
+
+   =========================================================CURSORES=======================================
+   Los cursores sólo se puede usar una vez, luego se debe cargar nuevamente la variable
+   var cursor =db.collection.find()
+
+   cursor.forEach( function(arg) {    })
+   
+   cursor.count()                         La cantidad de elementos  sobre una colección (find),no funciona si existen otras sentecias sobre ella
+   cursor.size()                          La cantidad de elementos de cada consulta
+   
+   cursor.sort({valor:1})                 Ordena ascendente
+   cursor.sort({valor:-1})                Ordena descendente
+   cursor.sort({valor:1}).limit(3)        Limita la salida
+   cursor.sort({valor:1}).skip(1)         Salta la cantidad de elementos solicitados 
+   
+   ======================================================= ARREGLOS============================================
+
+   Obtener elementos de un array
+
+   db.collection.find({}, {_id:0,array : {$slice : 4}})
+   
+   db.collection.find({}, {_id:0,array : {$slice : [inicio:fin]}})
+
+  db.collection.find({array :{$in : valor}}, {_id:0,array : {$slice : [inicio:fin]}}) si se encuentra el valor
+   
+  db.collection.find({array :{$nin : valor}}, {_id:0,array : {$slice : [inicio:fin]}}) NO se encuentra el valor
+    
+
+  ========================================================= GROUPS======================================
+  $group
+  
+      $sum: suma (o incrementa)
+      $avg : calcula la media
+      $min: mínimo de los valores
+      $max: máximo
+      $push: Mete en un array un valor determinado
+      $addToSet: Mete en un array los valore que digamos, pero solo una vez
+      $first: obtiene el primer elemento del grupo, a menudo junto con sort
+      $last: obtiene el último elemento, a menudo junto con sort
+
+$bucket y $bucketAuto
+$facet
+$project
+$match                      Filtra documentos, dejando solo los que vamos a utilizar. (n:1)
+$sort                       Ordenamiento
+$skip                       Saltarse algunos a elementos n:1.
+$limit                      Número de elementos máximo. n:1
+
+
+$out                        Crea una colección nueva a partir de los datos. 1:1
+$lookup                     "join" varias colecciones
+
+
+
+
+
+  db.collection.aggregate(  [{$group : {_id :"$nombre" }}] )
+
+
+  db.collection.aggregate(  [{$group : {_id :"$nombre" , "apariciones" : {$sum : 1} }}] )
+
+  $sum : significa que va a agrupar de n en n, osea que si está el número 3, agrupa de 3 en 3. 
+
+
+  db.sesiones.aggregate([ {$group: { _id:{nombre:"$nombre", mes: "$mes"}, num_sesiones: {$sum:1} } } ] )
+
+
+
+  db.libros.aggregate(  [{$group : {_id :"$nombre" , apariciones : {$sum : 1}, totalVendidos: {$sum:"$unidades"} }}] 
+
+
+   
+   =================================================CRUD en subdocumentos==================================
+
+  consulta
+  db.collection.find({ "subdocumento.campo":"valor"})
+
+
+   
+
+
+   =====================================================ELEMMATCH======================================
+
+   Busca subCampo en los elementos de un documento
+   db.collection.find( campo : {$elemMatch :  { subCampo: valor}  })
+
+
+  ====================================================INDEX=======================================
+  db.collection.createIndex({campo : 1})
+
+  ======================================================== BACKUP ===========================
+  mongodump --db nombreBD 
+
+  mongorestore --db nombreBD dump/nombreBD
+
+
+
+   ==========================================================HELP=============================
+   db.help()                    help on db methods
+	db.mycoll.help()             help on collection methods
+	sh.help()                    sharding helpers
+	rs.help()                    replica set helpers
+	help admin                   administrative help
+	help connect                 connecting to a db help
+	help keys                    key shortcuts
+	help misc                    misc things to know
+	help mr                      mapreduce
+
+	show dbs                     show database names
+	show collections             show collections in current database
+	show users                   show users in current database
+	show profile                 show most recent system.profile entries with time >= 1ms
+	show logs                    show the accessible logger names
+	show log [name]              prints out the last segment of log in memory, 'global' is default
+	use <db_name>                set current database
+	db.foo.find()                list objects in collection foo
+	db.foo.find( { a : 1 } )     list objects in foo where a == 1
+	it                           result of the last line evaluated; use to further iterate
+	DBQuery.shellBatchSize = x   set default number of items to display on shell
+	exit                         quit the mongo shell
+
