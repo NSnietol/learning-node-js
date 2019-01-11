@@ -1,11 +1,11 @@
-var { writeFile, existsSync, readFileSync, unlink } = require('fs');
+let { writeFile, existsSync, readFileSync, unlink } = require('fs');
 
 class LocalStorage {
 
     constructor() {
         if (existsSync('localStorage.json')) {
             console.log('Loading items from localStorage.json');
-            var txt = readFileSync('localStorage.json');
+            let txt = readFileSync('localStorage.json');
             this.items = JSON.parse(txt);
         } else {
             this.items = {};

@@ -1,8 +1,10 @@
-console.log( "localStorage length: ", localStorage.length );
+let localStorage = require('./localStorage');
 
-var uid = localStorage.getItem("user_id");
+console.log("localStorage length: ", localStorage.length);
 
-console.log( "user_id: ", uid );
+let uid = localStorage.getItem("user_id");
+
+console.log("user_id: ", uid);
 
 if (!uid) {
     console.log('User ID not found. Setting the user id and token...');

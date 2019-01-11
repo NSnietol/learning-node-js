@@ -1,6 +1,6 @@
 class Person {
 
-    constructor(name, isEmployee=false, isManager=false, hours=40, money=0, shoppingList=[] ) {
+    constructor(name, isEmployee = false, isManager = false, hours = 40, money = 0, shoppingList = []) {
         this.name = name
         this.isEmployee = isEmployee;
         this.isManager = isManager;
