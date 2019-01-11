@@ -21,30 +21,31 @@ io.on("connection", cliente => {
 
         usuarios.agregarPersona(cliente.id, data.nombre, data.sala);
 
-        // cliente.broadcast.emit(
-        //   "enviarMensaje",
-        //   crearMensaje("Admin", data.usuario + " ingresó")
-        // );
-
         let personas = usuarios.getPersonasPorSala(data.sala);
         cliente.broadcast.to(data.sala).emit("clientesActivos", personas);
+        cliente.broadcast.to(data.sala).emit(
+            "enviarMensaje",
+            crearMensaje(
+                "Administrador",
+                `${data.nombre} se unió al chat`
+            )
+        );
 
         return callback(personas);
     });
 
-    cliente.on("enviarMensaje", data => {
+    cliente.on("enviarMensaje", (data ,callback)=> {
 
-
-        let persona = usuarios.getPersona(cliente.id).persona;
-
-        if (persona) {
-            console.log("OK solicitud, enviar a todos");
-            let mensaje = crearMensaje(persona.usuario, data.message);
-            cliente.broadcast.to(persona.sala).emit(
+        let data_persona = usuarios.getPersona(cliente.id);
+        if (data_persona.ok===true) {  
+            let mensaje = crearMensaje(data_persona.persona.nombre, data.message);
+            cliente.broadcast.to(data_persona.persona.sala).emit(
                 "enviarMensaje",
                 mensaje
             );
             callback(mensaje);
+        }else{
+          console.log('Solicitud negada',data_persona);
         }
 
     });
@@ -59,15 +60,7 @@ io.on("connection", cliente => {
         }
     });
 
-    cliente.on("mensajePrivado", data => {
-        let persona = usuarios.getPersona(cliente.id);
-
-        if (persona) {
-            cliente.broadcast
-                .to(data.id_destino)
-                .emit("mensajePrivado", crearMensaje(persona.nombre, data.message));
-        }
-    });
+   
 
     cliente.on("disconnect", () => {
         let data = usuarios.borrarPersona(cliente.id).personaBorrada;

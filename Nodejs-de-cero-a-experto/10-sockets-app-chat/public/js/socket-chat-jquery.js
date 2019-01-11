@@ -7,16 +7,17 @@ var sala = params.get('sala');
 // referencia JQUERY
 
 
-let divUsuarios = $("#divUsuarios");
+var divUsuarios = $("#divUsuarios");
+var divChatBox = $('#divChatbox');
+var formEnviar = $("#formEnviar");
+var textMensaje = $("#textMensaje");
 
-let divChaBox = $('#divChatBox');
+var smallSala = $('#smallSala')
 
-let formEnviar = $("#formEnviar");
-
-let textMensaje = $("#textMensaje");
-
-
-
+function randerizarSala(){
+    console.log('SALA');
+    smallSala.html(sala);
+}
 function randerizarUsuarios(personas) {
 
     let html = "";
@@ -35,20 +36,41 @@ function randerizarUsuarios(personas) {
     divUsuarios.html(html);
 }
 
-function randerizarMensaje(mensaje) {
+function renderizarMensaje(mensaje, enviado) {
 
     var html = '';
-    html += '<li class="animated fadeIn">';
-    html += '<div class="chat-img"><img src="assets/images/users/1.jpg" alt="user" /></div>';
-    html += 'div class="chat-content">';
-    html += '<h5>' + mensaje.usuario + '</h5>';
-    html += '<div class="box bg-light-info">' + mensaje.message + '</div>';
-    html += '</div>';
-    html += '<div class="chat-time">10:56 am</div>';
-    html += '</li>';
+    var adminClass='info';
+    if(mensaje.usuario==='Administrador'){
+        adminClass='danger';
+    }
 
-    divChaBox.append(html);
-}
+    if(enviado){
+
+       html+=' <li class="reverse">';
+       html+=' <div class="chat-content">';
+       html+=' <h5>'+ mensaje.usuario + '</h5>';
+       html+=' <div class="box bg-light-inverse">' + mensaje.message +' </div>';
+       html+=' </div>';
+       html+=' <div class="chat-img"><img src="assets/images/users/5.jpg" alt="user" /></div>';
+       html+=' <div class="chat-time">'+new Date(mensaje.fecha).toLocaleTimeString('en-US')+'</div>';
+       html+=' </li>';
+    
+    }else{
+        html += '<li class="animated fadeIn">';
+    if(mensaje.usuario!=='Administrador'){
+        html += '<div class="chat-img"><img src="assets/images/users/1.jpg" alt="user" /></div>';
+    }
+    html += '<div class="chat-content">';
+    html += '<h5>' + mensaje.usuario + '</h5>';
+    html += '<div class="box bg-light-'+adminClass+'">' + mensaje.message + '</div>';
+    html += '</div>';
+    html += '<div class="chat-time">'+new Date(mensaje.fecha).toLocaleTimeString('en-US')+'</div>';
+    html += '</li>';
+ 
+    }
+   
+    divChatBox.append(html);
+   }
 
 
 divUsuarios.on('click', 'a', function() {
@@ -63,8 +85,8 @@ divUsuarios.on('click', 'a', function() {
 
 });
 
-formEnviar.on('submit', function(e) {
 
+formEnviar.on('submit', function(e) {
 
     e.preventDefault();
     if (textMensaje.val().trim().length === 0) {
@@ -73,12 +95,31 @@ formEnviar.on('submit', function(e) {
     console.log(textMensaje.val());
 
     // Enviar información
-    socket.emit('crearMensaje', {
+    socket.emit('enviarMensaje', {
         nombre,
-        mensaje: textMensaje.val()
+        message: textMensaje.val()
     }, function(resp) {
         textMensaje.val('').focus();
-        randerizarMensaje(resp);
+        renderizarMensaje(resp,true);
+        scrollBottom();
+        
     });
 
 });
+
+function scrollBottom() {
+
+  
+    var newMessage = divChatBox.children('li:last-child');
+
+    // heights
+    var clientHeight = divChatBox.prop('clientHeight');
+    var scrollTop = divChatBox.prop('scrollTop');
+    var scrollHeight = divChatBox.prop('scrollHeight');
+    var newMessageHeight = newMessage.innerHeight();
+    var lastMessageHeight = newMessage.prev().innerHeight() || 0;
+
+    if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+        divChatBox.scrollTop(scrollHeight);
+    }
+}
