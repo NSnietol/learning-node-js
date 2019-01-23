@@ -24,7 +24,7 @@ app.post("/auth", (req, res) => {
     }
 
     Usuario.findOne({ email: body.email }, (err, usuario) => {
-        if (usuario === undefined || err || usuario == null) {
+        if (usuario === undefined || err || !usuario) {
             return res.status(400).json({
                 ok: false,
                 message: usuario == undefined ? "Email o contraseña incorrecta " : err
