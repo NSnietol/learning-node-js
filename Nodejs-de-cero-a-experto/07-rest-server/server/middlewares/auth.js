@@ -1,30 +1,23 @@
 const jwt = require('jsonwebtoken');
 
-//========================	
-        //Verificar Token	
-        //=======================
-
-let validarToken=(req,res,next)=>{
+let validarToken = (req, res, next) => {
 
     let token = req.get('Authorization');
 
+    jwt.verify(token, process.env.SEED, (err, decoced) => {
 
-    jwt.verify(token,process.env.SEED,(err,decoced)=>{
-
-        if(err){
-
+        if (err) {
             return res.status(401).json({
-
-                ok:false,
+                ok: false,
                 err
             })
         }
 
-        req.usuario=decoced.usuario;
+        req.usuario = decoced.usuario;
         next();
 
     });
-    
+
 
 
 
@@ -32,18 +25,18 @@ let validarToken=(req,res,next)=>{
 
 
 
-let validarRole=(req,res,next)=>{
+let validarRole = (req, res, next) => {
 
     let usuario = req.usuario;
 
-    if(usuario.role==='ADMIN_ROLE'){
+    if (usuario.role === 'ADMIN_ROLE') {
         next();
 
-    }else{
+    } else {
 
         return res.status(400).json({
 
-            ok:false,
+            ok: false,
             message: "No cuenta con permisos para realizar esta operación"
         });
     }
@@ -51,29 +44,31 @@ let validarRole=(req,res,next)=>{
 }
 
 
-let validarTokenImg=(req,res,next)=>{
+let validarTokenImg = (req, res, next) => {
 
     let token = req.query.token;
 
 
-    jwt.verify(token,process.env.SEED,(err,decoced)=>{
+    jwt.verify(token, process.env.SEED, (err, decoced) => {
 
-        if(err){
+        if (err) {
 
             return res.status(401).json({
 
-                ok:false,
+                ok: false,
                 err
             })
         }
 
-        req.usuario=decoced.usuario;
+        req.usuario = decoced.usuario;
         next();
 
     });
-    
+
 }
 
 module.exports = {
-    validarToken,validarRole,validarTokenImg
+    validarToken,
+    validarRole,
+    validarTokenImg
 }
